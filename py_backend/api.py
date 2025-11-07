@@ -44,6 +44,7 @@ model.load_model("model/topic_model.json")
 model.set_params(predictor=predictor)
 
 vectorizer = pickle.load(open("model/vectorizer.pkl", "rb"))
+label_encoder = pickle.load(open("model/label_encoder.pkl", "rb"))
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -55,7 +56,8 @@ def predict():
     cleaned = [clean_text(t) for t in texts]
     X = vectorizer.transform(cleaned)
     preds = model.predict(X)
-    results = [{"headline": t, "category": str(p)} for t, p in zip(texts, preds)]
+    labels = label_encoder.inverse_transform(preds)
+    results = [{"headline": t, "category": label} for t, label in zip(texts, labels)]
     return jsonify(results)
 
 if __name__ == "__main__":

@@ -21,12 +21,14 @@ def clean_text(text):
 model = xgb.XGBClassifier()
 model.load_model("model/topic_model.json")
 vectorizer = pickle.load(open("model/vectorizer.pkl", "rb"))
+label_encoder = pickle.load(open("model/label_encoder.pkl", "rb"))
 
 # Predict
 def predict_topic(title):
     text = clean_text(title)
     vec = vectorizer.transform([text])
-    return model.predict(vec)[0]
+    pred = model.predict(vec)
+    return label_encoder.inverse_transform(pred)[0]
 
 # Example
 sample = "NASA launches new satellite to study global warming"
